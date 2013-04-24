@@ -243,22 +243,28 @@ class ThreadedHandler implements Runnable
 		}
 	}
 	void handleRequest( InputStream inStream, OutputStream outStream) {
+		//System.out.println("sadasdas");
 		Scanner in = new Scanner(inStream);         
 		try {
 			ObjectInputStream tmp = new ObjectInputStream(inStream);
 			Object Rin = tmp.readObject();
-			ArrayList<String> myString = (ArrayList<String>)Rin;
-			System.out.println(myString);
+			//ArrayList<String> myString = (ArrayList<String>)Rin;
+			//System.out.println((String)Rin);
+			/*for(int i=0; i<myString.size(); ++i) {
+				System.out.println(myString.get(i));
+			}*/
 		} catch (IOException | ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
+			System.out.println("sadasdas");
 			e1.printStackTrace();
+			
 		}
 		PrintWriter out = new PrintWriter(outStream, 
 				true /* autoFlush */);
-
+		//out.print("QWE");
 		// Get parameters of the call
 		String request = in.nextLine();
-
+		out.println("cani");
 		System.out.println("Request="+request);
 
 		String requestSyntax = "Syntax: COMMAND|USER|PASSWORD|OTHER|ARGS";
@@ -303,7 +309,7 @@ class ThreadedHandler implements Runnable
 			else if(command.equals("voteRes")){
 				voteRes(args, out);
 			}
-
+			
 		}
 		catch (Exception e) {		
 			System.out.println(requestSyntax);
@@ -312,6 +318,7 @@ class ThreadedHandler implements Runnable
 			System.out.println(e.toString());
 			out.println(e.toString());
 		}
+		
 	}
 
 	public void run() {  
@@ -321,6 +328,7 @@ class ThreadedHandler implements Runnable
 			{
 				InputStream inStream = incoming.getInputStream();
 				OutputStream outStream = incoming.getOutputStream();
+				
 				handleRequest(inStream, outStream);
 
 			}
