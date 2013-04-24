@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Egg</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_room">RoomActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="egg_title">Egg Voter</string>
+    <string name="action_host">Host a new Vote</string>
+    <string name="title_activity_host">Host a Vote</string>
+    <string name="action_submit">Submit Choice</string>
+    <string name="please_select">Select Candidates</string>
+    <string name="add_candidate">Add</string>
+    <string name="add_new">New Candidate</string>
+    <string name="restaurant_name">Restaurant Name</string>
+    <string name="discription">Discription</string>
+    <string name="title_activity_vote">VoteActivity</string>
+    <string name="please_vote">Vote Your Choice</string>
+
+</resources>
