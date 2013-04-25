@@ -22,5 +22,7 @@
     <string name="discription">Discription</string>
     <string name="title_activity_vote">VoteActivity</string>
     <string name="please_vote">Vote Your Choice</string>
+    <string name="end_the_vote">End this Vote</string>
+    <string name="action_add">Add New Entry</string>
 
 </resources>
