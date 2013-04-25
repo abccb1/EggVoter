@@ -25,3 +25,6 @@ Login|root|ttgwzmt5fz|username|password
 
 getHosts|root|ttgwzmt5fz
 	tablename|owner|status
+
+requestRes|root|ttgwzmt5fz
+	name1|name2|name3|....
