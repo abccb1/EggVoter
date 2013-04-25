@@ -24,5 +24,6 @@
     <string name="please_vote">Vote Your Choice</string>
     <string name="end_the_vote">End this Vote</string>
     <string name="action_add">Add New Entry</string>
+    <string name="house_image">Image of House</string>
 
 </resources>

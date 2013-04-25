@@ -44,35 +44,39 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int egg=0x7f020001;
         public static final int host=0x7f020002;
         public static final int house=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int icon=0x7f020005;
-        public static final int input_mode=0x7f020006;
-        public static final int login=0x7f020007;
-        public static final int login_layer=0x7f020008;
-        public static final int luvfood_background=0x7f020009;
-        public static final int submit=0x7f02000a;
-        public static final int vote=0x7f02000b;
+        public static final int house_egg=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int icon=0x7f020006;
+        public static final int input_mode=0x7f020007;
+        public static final int login=0x7f020008;
+        public static final int login_layer=0x7f020009;
+        public static final int luvfood_background=0x7f02000a;
+        public static final int submit=0x7f02000b;
+        public static final int vote=0x7f02000c;
     }
     public static final class id {
-        public static final int action_forgot_password=0x7f0a0017;
-        public static final int action_settings=0x7f0a0016;
+        public static final int action_forgot_password=0x7f0a001a;
+        public static final int action_settings=0x7f0a0019;
         public static final int add_button=0x7f0a0002;
         public static final int add_text=0x7f0a0001;
         public static final int candidate_list=0x7f0a0000;
         public static final int checkBox1=0x7f0a0015;
         public static final int dummy_button=0x7f0a000f;
         public static final int email=0x7f0a0009;
-        public static final int end_vote=0x7f0a0018;
+        public static final int end_vote=0x7f0a001b;
         public static final int fullscreen_content=0x7f0a000d;
         public static final int fullscreen_content_controls=0x7f0a000e;
         public static final int host_button=0x7f0a0012;
         public static final int initial_view=0x7f0a0004;
-        public static final int listView1=0x7f0a0011;
         public static final int login=0x7f0a000b;
         public static final int login_form=0x7f0a0008;
         public static final int login_status=0x7f0a0006;
         public static final int login_status_message=0x7f0a0007;
+        public static final int owner_name=0x7f0a0018;
         public static final int password=0x7f0a000a;
+        public static final int room_image=0x7f0a0016;
+        public static final int room_list=0x7f0a0011;
+        public static final int room_name=0x7f0a0017;
         public static final int sign_in_button=0x7f0a000c;
         public static final int submit_button=0x7f0a0003;
         public static final int textView1=0x7f0a0005;
@@ -88,6 +92,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int activity_room=0x7f030004;
         public static final int activity_vote=0x7f030005;
         public static final int restaurant_info=0x7f030006;
+        public static final int room_info=0x7f030007;
     }
     public static final class menu {
         public static final int host=0x7f090000;
@@ -97,11 +102,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class string {
         public static final int action_add=0x7f070016;
-        public static final int action_forgot_password=0x7f07001c;
+        public static final int action_forgot_password=0x7f07001d;
         public static final int action_host=0x7f07000b;
         public static final int action_settings=0x7f070001;
-        public static final int action_sign_in_register=0x7f07001a;
-        public static final int action_sign_in_short=0x7f07001b;
+        public static final int action_sign_in_register=0x7f07001b;
+        public static final int action_sign_in_short=0x7f07001c;
         public static final int action_submit=0x7f07000d;
         public static final int add_candidate=0x7f07000f;
         public static final int add_new=0x7f070010;
@@ -111,21 +116,22 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int dummy_content=0x7f070005;
         public static final int egg_title=0x7f07000a;
         public static final int end_the_vote=0x7f070015;
-        public static final int error_field_required=0x7f070021;
-        public static final int error_incorrect_password=0x7f070020;
-        public static final int error_invalid_email=0x7f07001e;
-        public static final int error_invalid_password=0x7f07001f;
+        public static final int error_field_required=0x7f070022;
+        public static final int error_incorrect_password=0x7f070021;
+        public static final int error_invalid_email=0x7f07001f;
+        public static final int error_invalid_password=0x7f070020;
         public static final int hello_world=0x7f070002;
-        public static final int login_progress_signing_in=0x7f07001d;
+        public static final int house_image=0x7f070017;
+        public static final int login_progress_signing_in=0x7f07001e;
         public static final int please_select=0x7f07000e;
         public static final int please_vote=0x7f070014;
         /**  Strings related to login 
          */
-        public static final int prompt_email=0x7f070018;
-        public static final int prompt_password=0x7f070019;
+        public static final int prompt_email=0x7f070019;
+        public static final int prompt_password=0x7f07001a;
         public static final int restaurant_name=0x7f070011;
         public static final int title_activity_host=0x7f07000c;
-        public static final int title_activity_login=0x7f070017;
+        public static final int title_activity_login=0x7f070018;
         public static final int title_activity_result=0x7f070003;
         public static final int title_activity_room=0x7f070006;
         public static final int title_activity_vote=0x7f070013;

@@ -24,7 +24,6 @@ public class VoteActivity extends Activity {
 	public ArrayList<Restaurant> restaurantList;
 	public MyCustomAdapter dataAdapter;
 	public ProgressDialog pd;
-	public String owner;
 	public String roomname;
 	public Handler finishedHandler = new Handler() {
         @Override public void handleMessage(Message msg) {
@@ -42,9 +41,8 @@ public class VoteActivity extends Activity {
 		findViewById(R.id.vote_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	AlertDialog.Builder alert = new AlertDialog.Builder(VoteActivity.this);
-	        	alert.setTitle("");
 	        	alert.setMessage("Submit Your Vote?");
-	        	// Set an EditText view to get user input 
+
 	        	pd = new ProgressDialog(VoteActivity.this);
 	        	alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 		        	public void onClick(DialogInterface dialog, int whichButton) {
@@ -52,7 +50,7 @@ public class VoteActivity extends Activity {
 			         pd.setTitle("Submiting");
 			         pd.setMessage("Wait while submiting your votes...");
 			         pd.show();
-			         final String result = "vote|root|ttgwzmt5fz|" + RoomActivity.username + "|" + owner +"|" + formResult();
+			         final String result = "voteRes|root|ttgwzmt5fz|"  + roomname +"|" + formResult();
 			         Thread contactserver = new Thread(){ 
 				        	@Override 
 				        	public void run(){
@@ -85,8 +83,8 @@ public class VoteActivity extends Activity {
 		return result;
 	}
 	private void formList(String in){
-		String[] input = in.split("|");
-		for(int i = 0;i < input.length;i+=2)
+		String[] input = in.split("\\|");
+		for(int i = 0;i < input.length;i++)
 		  restaurantList.add(new Restaurant(input[i]));
 	}
 	private void displayListView() {

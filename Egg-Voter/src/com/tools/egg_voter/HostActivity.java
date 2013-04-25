@@ -61,7 +61,7 @@ public class HostActivity extends Activity {
 			         pd.setTitle("Submiting");
 			         pd.setMessage("Wait while submiting...");
 			         pd.show();
-			         final String result = "host|root|ttgwzmt5fz|" + RoomActivity.username + "|" + input.getText().toString()+"|" + formResult();
+			         final String result = "InitDB|root|ttgwzmt5fz|" + "|" + input.getText().toString()+RoomActivity.username + "|" + formResult();
 			         Thread contactserver = new Thread(){ 
 				        	@Override 
 				        	public void run(){
