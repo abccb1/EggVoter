@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class RoomActivity extends Activity {
-
+	public static String username;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,7 +22,8 @@ public class RoomActivity extends Activity {
         });
 		TextView uname=new TextView(this); 
 	    uname=(TextView)findViewById(R.id.user_id); 
-	    uname.setText("Welcome, "+getIntent().getStringExtra("username")+".");
+	    username = getIntent().getStringExtra("username");
+	    uname.setText("Welcome, "+username+".");
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#f68d00"
     tools:context=".RoomActivity" >
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/luvfood_background"
         android:orientation="vertical" >
 
         <TextView
@@ -13,15 +13,18 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="@string/please_select"
+            android:background="#1a1a1a"
             android:textSize="20sp" />
 
         <ListView
             android:id="@+id/candidate_list"
             android:layout_width="fill_parent"
-            android:layout_height="388dp" />
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:background="@null" />
 
 	<GridLayout
-	    android:layout_width="wrap_content"
+	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_gravity="bottom" >
 
@@ -29,20 +32,25 @@
            android:id="@+id/add_text"
            android:layout_width="266dp"
            android:layout_height="wrap_content"
-           android:layout_gravity="left|top"
+           android:layout_gravity="start"
            android:ems="10"
            android:hint="@string/add_new"
            android:padding="10dp"
            android:textSize="18sp" >
 
         </EditText>
-       <Button
-            android:id="@+id/add_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_candidate" />
+
+       <ImageButton
+           android:id="@+id/add_button"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:background="@null"
+           android:contentDescription="@string/action_add"
+           android:src="@drawable/add_button" />
+
     </GridLayout>
-    </LinearLayout>
+    
 
    <LinearLayout
             style="?buttonBarStyle"
@@ -63,5 +71,6 @@
 		    android:src="@drawable/submit" />
 
 
+     </LinearLayout>
      </LinearLayout>
 </merge>

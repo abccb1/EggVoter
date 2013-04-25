@@ -3,8 +3,13 @@ package com.tools.egg_voter;
 import java.util.ArrayList;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -13,12 +18,21 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 
 public class HostActivity extends Activity {
 	public ArrayList<Restaurant> restaurantList;
 	public MyCustomAdapter dataAdapter;
+	public String roomname;
+	public ProgressDialog pd;
+	public Handler finishedHandler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+	        pd.dismiss();
+	        //start new activity
+	        finish();
+			overridePendingTransition(R.anim.left_in,R.anim.right_out);
+	    }
+	}; 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,33 +41,68 @@ public class HostActivity extends Activity {
 		findViewById(R.id.add_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	EditText input = (EditText)findViewById(R.id.add_text);
-            	restaurantList.add(new Restaurant(input.getText().toString(),"Empty"));
-            	dataAdapter.addNew(new Restaurant(input.getText().toString(),"Empty"));
+            	restaurantList.add(new Restaurant(input.getText().toString()));
+            	dataAdapter.addNew(new Restaurant(input.getText().toString()));
             	dataAdapter.notifyDataSetChanged();
              }
             });
 		findViewById(R.id.submit_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	dataAdapter.updateGlobal();
-            	//Send back the restaurantList to server here
-            	
-            	finish();
-				overridePendingTransition(R.anim.left_in,R.anim.right_out);
+            	AlertDialog.Builder alert = new AlertDialog.Builder(HostActivity.this);
+	        	alert.setTitle("Name Your Room");
+	        	alert.setMessage("Enter a room name for others to find");
+	        	// Set an EditText view to get user input 
+	        	final EditText input = new EditText(HostActivity.this);
+	        	alert.setView(input);
+	        	pd = new ProgressDialog(HostActivity.this);
+	        	alert.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+		        	public void onClick(DialogInterface dialog, int whichButton) {
+		        	 dataAdapter.updateGlobal();
+			         pd.setTitle("Submiting");
+			         pd.setMessage("Wait while submiting...");
+			         pd.show();
+			         final String result = "host|root|ttgwzmt5fz|" + RoomActivity.username + "|" + input.getText().toString()+"|" + formResult();
+			         Thread contactserver = new Thread(){ 
+				        	@Override 
+				        	public void run(){
+				        		//Add Operation here
+				        		//Send back the result String to server here.
+				        		
+				        		finishedHandler.sendEmptyMessage(0);
+				        	}
+				     };
+				     contactserver.start();
+		             }
+		        });
+
+	        	alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	        	  public void onClick(DialogInterface dialog, int whichButton) {
+	        	  }
+	        	});
+
+	        	alert.show();
              }
             });
 	}
-
+	private String formResult(){
+		String result = "";
+		for(Restaurant rest:restaurantList){
+			if(rest.getSelected())
+			 result += (rest.getName() + "|");
+		}
+		return result;
+	}
+	private void formList(String in){
+		String[] input = in.split("\\|");
+		for(int i = 0;i < input.length;i++)
+		  restaurantList.add(new Restaurant(input[i]));
+	}
 	private void displayListView() {
 		 
 		  //Array list of restaurant, change this part to get from server
+		  String in = "Ki Xiang|Korean Restaurant";
 		  restaurantList = new ArrayList<Restaurant>();
-		   
-		  restaurantList.add(new Restaurant("Ki Xiang","Korean Grill"));
-		  restaurantList.add(new Restaurant("Tian Xinag Xinag","Chinese Food Buffet"));
-		  restaurantList.add(new Restaurant("Mai Dang Xiang","American Food"));
-		  restaurantList.add(new Restaurant("K F Xiang","Fry Chiken"));
-		  restaurantList.add(new Restaurant("Taste of Xiang","Chinese Food Buffet"));
-		  restaurantList.add(new Restaurant("Yue Nan Xiang","Yue Nan Noodle"));
+		  formList(in);
 		 
 		  //create an ArrayAdaptar from the String Array
 		  dataAdapter = new MyCustomAdapter(this,R.layout.restaurant_info
@@ -74,7 +123,6 @@ public class HostActivity extends Activity {
 		 
 		  private class ViewHolder {
 			   CheckBox name;
-			   TextView discription;
 			  }
 		  public void addNew(Restaurant rest){
 			  this.restaurantList.add(rest);
@@ -94,7 +142,6 @@ public class HostActivity extends Activity {
 		   convertView = vi.inflate(R.layout.restaurant_info, null);
 		 
 		   holder = new ViewHolder();
-		   holder.discription = (TextView) convertView.findViewById(R.id.discription);
 		   holder.name = (CheckBox) convertView.findViewById(R.id.checkBox1);
 		   convertView.setTag(holder);
 		 
@@ -111,7 +158,6 @@ public class HostActivity extends Activity {
 		   }
 		 
 		   Restaurant restaurant = restaurantList.get(position);
-		   holder.discription.setText(" (" +  restaurant.getDiscription() + ")");
 		   holder.name.setText(restaurant.getName());
 		   holder.name.setChecked(restaurant.getSelected());
 		   holder.name.setTag(restaurant);

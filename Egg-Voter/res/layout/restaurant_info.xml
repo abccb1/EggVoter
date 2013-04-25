@@ -13,12 +13,4 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:text="@string/restaurant_name" />
-     <TextView
-        android:id="@+id/discription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/checkBox1"
-        android:layout_alignBottom="@+id/checkBox1"
-        android:layout_toRightOf="@+id/checkBox1"
-        android:text="@string/discription" />
 </RelativeLayout>
