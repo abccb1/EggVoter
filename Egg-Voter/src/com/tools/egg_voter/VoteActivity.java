@@ -48,7 +48,7 @@ public class VoteActivity extends Activity {
 		        	public void onClick(DialogInterface dialog, int whichButton) {
 		        	 dataAdapter.updateGlobal();
 			         pd.setTitle("Submiting");
-			         pd.setMessage("Wait while submiting your votes...");
+			         pd.setMessage("Thanks for your vote...");
 			         pd.show();
 			         final String result = "voteRes|root|ttgwzmt5fz|"  + roomname +"|" + formResult();
 			         Thread contactserver = new Thread(){ 
