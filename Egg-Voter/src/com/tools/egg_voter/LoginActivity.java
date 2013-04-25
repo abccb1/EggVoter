@@ -1,5 +1,16 @@
 package com.tools.egg_voter;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
+import java.lang.InterruptedException;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -48,7 +59,8 @@ public class LoginActivity extends Activity {
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
-
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -101,6 +113,7 @@ public class LoginActivity extends Activity {
 	 * errors are presented and no actual login attempt is made.
 	 */
 	public void attemptLogin() {
+		String userLogInfo = "Login|root|ttgwzmt5fz|";
 		if (mAuthTask != null) {
 			return;
 		}
@@ -112,6 +125,8 @@ public class LoginActivity extends Activity {
 		// Store values at the time of the login attempt.
 		mEmail = mEmailView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
+		
+		
 
 		boolean cancel = false;
 		View focusView = null;
@@ -145,10 +160,14 @@ public class LoginActivity extends Activity {
 		} else {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
+			
+			userLogInfo += mEmail;
+			userLogInfo += "|" + mPassword;
+			
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			mAuthTask.execute(userLogInfo);
 		}
 	}
 
@@ -192,28 +211,46 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	public class UserLoginTask extends AsyncTask<String, Void, Boolean> {
+		Socket socket;
+		Scanner in;
+		PrintWriter out;
+		String logInRes;
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected Boolean doInBackground(String... params) {
 			// TODO: attempt authentication against a network service.
-
+			
 			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				return false;
+				socket = new Socket("moore10.cs.purdue.edu", 4040);
+				if (socket.isConnected()) {
+					System.out.println("Connected");
+				}
+				out = new PrintWriter(socket.getOutputStream(), true);
+				in = new Scanner(socket.getInputStream());
+				//debug
+				System.out.println(params[0]);
+				out.println(params[0]);
+				logInRes = (String) in.nextLine();
+				//debug
+				System.out.println(logInRes);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
-			for (String credential : DUMMY_CREDENTIALS) {
+			/*for (String credential : DUMMY_CREDENTIALS) {
 				String[] pieces = credential.split(":");
 				if (pieces[0].equals(mEmail)) {
 					// Account exists, return true if the password matches.
 					return pieces[1].equals(mPassword);
 				}
-			}
-
+			}*/
+			
 			// TODO: register the new account here.
-			return true;
+			return logInRes.equals("1");
 		}
 
 		@Override
@@ -238,5 +275,7 @@ public class LoginActivity extends Activity {
 			mAuthTask = null;
 			showProgress(false);
 		}
+
+		
 	}
 }
