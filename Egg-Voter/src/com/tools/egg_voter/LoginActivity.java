@@ -227,12 +227,10 @@ public class LoginActivity extends Activity {
 				}
 				out = new PrintWriter(socket.getOutputStream(), true);
 				in = new Scanner(socket.getInputStream());
-				//debug
-				System.out.println(params[0]);
+
 				out.println(params[0]);
 				logInRes = (String) in.nextLine();
-				//debug
-				System.out.println(logInRes);
+
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

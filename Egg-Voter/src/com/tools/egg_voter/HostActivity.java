@@ -1,6 +1,13 @@
 package com.tools.egg_voter;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +32,11 @@ public class HostActivity extends Activity {
 	public MyCustomAdapter dataAdapter;
 	public String roomname;
 	public ProgressDialog pd;
+	//socket
+		Socket socket;
+		PrintWriter out;
+		Scanner in;
+		
 	public Handler finishedHandler = new Handler() {
         @Override public void handleMessage(Message msg) {
 	        pd.dismiss();
@@ -32,7 +44,17 @@ public class HostActivity extends Activity {
 	        finish();
 			overridePendingTransition(R.anim.left_in,R.anim.right_out);
 	    }
-	}; 
+	};
+	public Handler initialHandler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+			//create an ArrayAdaptar from the String Array
+			  dataAdapter = new MyCustomAdapter(HostActivity.this,R.layout.restaurant_info
+			    , restaurantList);
+			  ListView listView = (ListView) findViewById(R.id.candidate_list);
+			  // Assign adapter to ListView
+			  listView.setAdapter(dataAdapter);
+	    }
+	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,12 +83,29 @@ public class HostActivity extends Activity {
 			         pd.setTitle("Submiting");
 			         pd.setMessage("Wait while submiting...");
 			         pd.show();
-			         final String result = "InitDB|root|ttgwzmt5fz|" + "|" + input.getText().toString()+RoomActivity.username + "|" + formResult();
+			         final String result = "InitDB|root|ttgwzmt5fz|" + input.getText().toString()+ "|" + RoomActivity.username + "|" + formResult();
 			         Thread contactserver = new Thread(){ 
 				        	@Override 
 				        	public void run(){
 				        		//Add Operation here
 				        		//Send back the result String to server here.
+				        		
+				        		try {
+									socket = new Socket("moore10.cs.purdue.edu", 4040);
+									out = new PrintWriter(socket.getOutputStream(),true);
+									out.println(result);
+									in = new Scanner(socket.getInputStream());
+									//debug
+									System.out.println(result);
+									out.println(result);
+									
+								} catch (UnknownHostException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 				        		
 				        		finishedHandler.sendEmptyMessage(0);
 				        	}
@@ -98,19 +137,43 @@ public class HostActivity extends Activity {
 		  restaurantList.add(new Restaurant(input[i]));
 	}
 	private void displayListView() {
-		 
-		  //Array list of restaurant, change this part to get from server
-		  String in = "Ki Xiang|Korean Restaurant";
-		  restaurantList = new ArrayList<Restaurant>();
-		  formList(in);
-		 
-		  //create an ArrayAdaptar from the String Array
-		  dataAdapter = new MyCustomAdapter(this,R.layout.restaurant_info
-		    , restaurantList);
-		  ListView listView = (ListView) findViewById(R.id.candidate_list);
-		  // Assign adapter to ListView
-		  listView.setAdapter(dataAdapter);
-          }
+		 final String sendMsg = "requestRes|root|ttgwzmt5fz";
+		 //Array list of restaurant, change this part to get from server
+		  Thread contactserver = new Thread(){ 
+	        	@Override 
+	        	public void run(){
+	        		//Add Operation here
+	        		//Send back the result String to server here.
+	        		try {
+						socket = new Socket("moore10.cs.purdue.edu", 4040);
+						if (socket.isConnected()) {
+							System.out.println("host connected");
+						}
+						out = new PrintWriter(socket.getOutputStream(),true);
+						//debug
+						System.out.println(sendMsg);
+						out.println(sendMsg);
+						in = new Scanner(socket.getInputStream());
+						final String resList = (String) in.nextLine();
+						//debug
+						System.out.println(resList);
+						
+						restaurantList = new ArrayList<Restaurant>();
+						
+						formList(resList);						  
+						  
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		initialHandler.sendEmptyMessage(0);
+	        	}
+	     };
+	     contactserver.start();
+     }
 	 private class MyCustomAdapter extends ArrayAdapter<Restaurant> {
 		 
 		  private ArrayList<Restaurant> restaurantList;
