@@ -16,12 +16,16 @@ public class PetServer
 	static void printUsage() {
 		System.out.println("In another window type:");
 		System.out.println("telnet sslabXX.cs.purdue.edu " + port);
-		System.out.println("GET-ALL-RES|root|ttgwzmt5fz");
-		System.out.println("NEWVOTE|root|ttgwzmt5fz|hostname");
+		System.out.println("CloseVote|root|ttgwzmt5fz|hostname");
+		System.out.println("GET-ALL-RES|root|ttgwzmt5fz|hostname");
+		System.out.println("InitDB|root|ttgwzmt5fz|hostname|username");
 		System.out.println("ADDRES|root|ttgwzmt5fz|hostname|restaurantName");
-		System.out.println("voteRes|root|ttgwzmt5fz|hostname|restaurantName");
+		System.out.println("voteRes|root|ttgwzmt5fz|hostname|restaurantName1|name2|.....");
+		System.out.println("Register|root|ttgwzmt5fz|username|password");
+		System.out.println("Login|root|ttgwzmt5fz|username|password");
 	}
 
+	
 	public static void main(String[] args )
 	{  
 		try
@@ -76,32 +80,48 @@ class ThreadedHandler implements Runnable
 
 		return DriverManager.getConnection( url, username, password);
 	}
-	void Login(String []  args, OutputStream out){
+	void CloseVote(String [] args, PrintWriter out){
 		Connection conn = null;
 		try{
 			conn = getConnection();
+			Statement stat = conn.createStatement();
+			stat.executeUpdate("USE CS252FINAL");
+			stat.executeUpdate("UPDATE "+args[3]+" SET status = 'closed'");
+		}
+		catch (Exception e) {
+			System.out.println(e.toString());
+			//out.println(e.toString());
+		}
+		finally
+		{
+			try {
+				if (conn!=null) conn.close();
+			}
+			catch (Exception e) {
+			}
+		}
+	}
+	void Login(String []  args, PrintWriter out){
+		Connection conn = null;
+		try{
+			conn = getConnection();
+			Statement stat = conn.createStatement();
+			stat.executeUpdate("USE CS252FINAL");
 			DatabaseMetaData dbm = conn.getMetaData();
 			// check if "employee" table is there
 			ResultSet tables = dbm.getTables(null, null, "USERINFO", null);
-			if (tables.next()) {
-				// Table exists
-				Statement stat = conn.createStatement();
-				stat.executeUpdate("USE CS252FINAL");
-				ResultSet result = stat.executeQuery( "SELECT * FROM USERINFO WHERE username = "+args[3]);
-				if(result.next()){
-					if(result.getString(2).equals(args[4])){
-						out.write(1);
-					}
-					else{
-						out.write(0);
-					}
+			ResultSet result = stat.executeQuery( "SELECT * FROM USERINFO WHERE username = \'"+args[3]+"\'");
+			if(result.next()){
+				if(result.getString(2).equals(args[4])){
+					out.println(1);
+				}
+				else{
+					out.println(2);
 				}
 			}
-			else {
-				// Table does not exist
-				Statement stat = conn.createStatement();
-				stat.executeUpdate("USE CS252FINAL");
-				stat.executeUpdate("CREATE TABLE USERINFO(username VARCHAR(20), password VARCHAR(20))");
+			else{
+				out.println(2);
+
 			}
 		}
 		catch (Exception e) {
@@ -117,20 +137,55 @@ class ThreadedHandler implements Runnable
 			}
 		}
 	}
-
-	void InitDB(String [] args, PrintWriter out, String hostname){
+	void Register(String []  args, PrintWriter out){
 		Connection conn = null;
 		try{
 			conn = getConnection();
 			Statement stat = conn.createStatement();
 			stat.executeUpdate("USE CS252FINAL");
-			String sql = "CREATE TABLE "+hostname+"(name VARCHAR(20), number DECIMAL(10, 0))";
+			DatabaseMetaData dbm = conn.getMetaData();
+			// check if "employee" table is there
+			ResultSet tables = dbm.getTables(null, null, "USERINFO", null);
+			if (tables.next()) {
+				// Table exists
+
+				stat.executeUpdate( "INSERT INTO USERINFO VALUES(\'"+args[3]+"\', \'"+args[4]+"\')");
+			}
+			else {
+				// Table does not exist
+				//stat.executeUpdate("CREATE TABLE USERINFO(username VARCHAR(20), password VARCHAR(20))");
+				stat.executeUpdate( "INSERT INTO USERINFO VALUES(\'"+args[3]+"\', \'"+args[4]+"\')");
+			}
+		}
+		catch (Exception e) {
+			System.out.println(e.toString());
+			//out.println(e.toString());
+		}
+		finally
+		{
+			try {
+				if (conn!=null) conn.close();
+			}
+			catch (Exception e) {
+			}
+		}
+	}
+	void InitDB(String [] args, PrintWriter out){
+		Connection conn = null;
+		//out.println("caoooo");
+		String hostname  = args[3];
+		try{
+			conn = getConnection();
+			Statement stat = conn.createStatement();
+			stat.executeUpdate("USE CS252FINAL");
+			String sql = "CREATE TABLE "+hostname+"(name VARCHAR(20), number DECIMAL(10, 0), owner VARCHAR(20), status VARCHAR(20))";
 			stat.executeUpdate(sql);
-			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'kibu\', 0)");
-			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'Dongfang\', 0)");
-			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'GreatWall\', 0)");
-			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'FuLam\', 0)");
-			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'Hensei\', 0)");
+			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'kibu\', 0, \'"+args[4]+"\', \'open\')");
+			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'Dongfang\', 0, \'"+args[4]+"\', \'open\')");
+			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'GreatWall\', 0, \'"+args[4]+"\', \'open\')");
+			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'FuLam\', 0, \'"+args[4]+"\', \'open\')");
+			stat.executeUpdate("INSERT INTO "+hostname+" VALUES(\'Hensei\', 0, \'"+args[4]+"\', \'open\')");
+
 			//stat.executeUpdate("UPDATE "+hostname+" SET number = 0");
 		}
 		catch (Exception e) {
@@ -156,16 +211,20 @@ class ThreadedHandler implements Runnable
 			conn = getConnection();
 			Statement stat = conn.createStatement();
 			ResultSet result = stat.executeQuery( "SELECT * FROM "+hostname);
-
+			String output = "";
+			if(result.next()){
+				output = output+result.getString(4)+"|"+result.getString(3)+"|"+result.getString(1)+"|";
+			    if(result.getString(4).equals("closed")) output += result.getString(2)+"|";
+			}
 			while(result.next()) {
-				out.print(result.getString(1)+"|");
+				output += result.getString(1)+"|";
 				//out.print(result.getString(2)+"|");
 				//out.print(result.getString(3)+"|");
 				//out.print(result.getString(4)+"|");
-				out.print(result.getString(2));
-				out.println("");
+				if(result.getString(4).equals("closed")) output += result.getString(2)+"|";
+				//out.println("");
 			}
-
+			out.print(output);
 			result.close();
 
 			/*
@@ -204,7 +263,12 @@ class ThreadedHandler implements Runnable
 			conn = getConnection();
 			Statement stat = conn.createStatement();
 			stat.executeUpdate("USE CS252FINAL");
-			stat.executeUpdate("INSERT INTO "+args[3]+" VALUES(\'"+args[4]+"\', 0)");
+			ResultSet result = stat.executeQuery( "SELECT * FROM "+args[3]);
+			String owner = "";
+			if(result.next()){
+				owner += result.getString(3);
+			}
+			stat.executeUpdate("INSERT INTO "+args[3]+" VALUES(\'"+args[4]+"\', 0, \'"+owner+"\', \'open\')");
 			//stat.executeUpdate("UPDATE "+hostname+" SET number = 0");
 		}
 		catch (Exception e) {
@@ -226,7 +290,9 @@ class ThreadedHandler implements Runnable
 			conn = getConnection();
 			Statement stat = conn.createStatement();
 			stat.executeUpdate("USE CS252FINAL");
-			stat.executeUpdate("UPDATE "+args[3]+" SET number = number + 1 WHERE name Like \""+args[4]+"\"");
+			for(int i=4;i<args.length;i++){
+				stat.executeUpdate("UPDATE "+args[3]+" SET number = number + 1 WHERE name Like \""+args[i]+"\"");
+			}
 			//stat.executeUpdate("UPDATE "+hostname+" SET number = 0");
 		}
 		catch (Exception e) {
@@ -245,26 +311,29 @@ class ThreadedHandler implements Runnable
 	void handleRequest( InputStream inStream, OutputStream outStream) {
 		//System.out.println("sadasdas");
 		Scanner in = new Scanner(inStream);         
-		try {
+		/*try {
 			ObjectInputStream tmp = new ObjectInputStream(inStream);
 			Object Rin = tmp.readObject();
 			//ArrayList<String> myString = (ArrayList<String>)Rin;
 			//System.out.println((String)Rin);
 			/*for(int i=0; i<myString.size(); ++i) {
 				System.out.println(myString.get(i));
-			}*/
-		} catch (IOException | ClassNotFoundException e1) {
+			}
+		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			System.out.println("sadasdas");
 			e1.printStackTrace();
-			
-		}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		PrintWriter out = new PrintWriter(outStream, 
 				true /* autoFlush */);
 		//out.print("QWE");
 		// Get parameters of the call
 		String request = in.nextLine();
-		out.println("cani");
+		//out.println("cani");
 		System.out.println("Request="+request);
 
 		String requestSyntax = "Syntax: COMMAND|USER|PASSWORD|OTHER|ARGS";
@@ -297,19 +366,28 @@ class ThreadedHandler implements Runnable
 			if (command.equals("GET-ALL-RES")) {
 				getAllRes(args, out);
 			}
-			else if (command.equals("LOGIN")){
-				Login(args, outStream);
+			else if(command.equals("InitDB")){
+				InitDB(args, out);
+			}
+			else if(command.equals("Register")){
+				Register(args, out);
+			}
+			else if (command.equals("Login")){
+				Login(args, out);
 			}
 			else if (command.equals("ADDRES")) {
 				addRes(args, out);
 			}
 			else if (command.equals("NEWVOTE")){
-				InitDB(args, out, args[3]);
+				InitDB(args, out);
 			}
 			else if(command.equals("voteRes")){
 				voteRes(args, out);
 			}
-			
+			else if(command.equals("CloseVote")){
+				CloseVote(args, out);
+			}
+
 		}
 		catch (Exception e) {		
 			System.out.println(requestSyntax);
@@ -318,7 +396,7 @@ class ThreadedHandler implements Runnable
 			System.out.println(e.toString());
 			out.println(e.toString());
 		}
-		
+
 	}
 
 	public void run() {  
@@ -328,7 +406,7 @@ class ThreadedHandler implements Runnable
 			{
 				InputStream inStream = incoming.getInputStream();
 				OutputStream outStream = incoming.getOutputStream();
-				
+
 				handleRequest(inStream, outStream);
 
 			}
