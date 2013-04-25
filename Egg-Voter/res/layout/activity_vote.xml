@@ -9,13 +9,29 @@
         android:background="@drawable/user_background"
         android:orientation="vertical" >
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="@string/please_vote"
-            android:textSize="20sp"
-            android:background="#1a1a1a" />
+	<GridLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#1a1a1a" >
+
+	    <TextView
+	        android:layout_width="266dp"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:padding="10dp"
+	        android:text="@string/please_vote"
+	        android:textSize="20sp" />
+
+	    <ImageButton
+	        android:id="@+id/end_vote"
+	        android:layout_width="wrap_content"
+           	android:layout_height="wrap_content"
+           	android:layout_gravity="center"
+          	android:background="@null"
+          	android:contentDescription="@string/action_refresh"
+	        android:src="@drawable/endvote_button" />
+
+	</GridLayout>
 
         <ListView
             android:id="@+id/vote_list"

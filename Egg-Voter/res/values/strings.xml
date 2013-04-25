@@ -25,5 +25,8 @@
     <string name="end_the_vote">End this Vote</string>
     <string name="action_add">Add New Entry</string>
     <string name="house_image">Image of House</string>
+    <string name="action_refresh">Refresh room list</string>
+    <string name="result_content">Chekout the Result!</string>
+    <string name="return_text">Return</string>
 
 </resources>

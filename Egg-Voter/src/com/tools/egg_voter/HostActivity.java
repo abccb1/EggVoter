@@ -95,9 +95,8 @@ public class HostActivity extends Activity {
 									out = new PrintWriter(socket.getOutputStream(),true);
 									out.println(result);
 									in = new Scanner(socket.getInputStream());
-									//debug
-									System.out.println(result);
-									out.println(result);
+									
+									//out.println(result);
 									
 								} catch (UnknownHostException e) {
 									// TODO Auto-generated catch block
@@ -150,14 +149,9 @@ public class HostActivity extends Activity {
 							System.out.println("host connected");
 						}
 						out = new PrintWriter(socket.getOutputStream(),true);
-						//debug
-						System.out.println(sendMsg);
 						out.println(sendMsg);
 						in = new Scanner(socket.getInputStream());
 						final String resList = (String) in.nextLine();
-						//debug
-						System.out.println(resList);
-						
 						restaurantList = new ArrayList<Restaurant>();
 						
 						formList(resList);						  

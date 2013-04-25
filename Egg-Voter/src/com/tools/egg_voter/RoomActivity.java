@@ -1,12 +1,18 @@
 package com.tools.egg_voter;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -16,8 +22,76 @@ import android.widget.TextView;
 
 public class RoomActivity extends Activity {
 	public static String username;
+	public Intent next;
 	public ArrayList<Room> roomList;
 	public MyCustomAdapter dataAdapter;
+	//socket
+			Socket socket;
+			PrintWriter out;
+			Scanner in;
+	public Handler finishedHandler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+		      startActivity(next);
+		      overridePendingTransition(R.anim.right_left,R.anim.left_right);   
+	    }
+	};
+	public Handler initialHandler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+			//create an ArrayAdaptar from the String Array
+			  dataAdapter = new MyCustomAdapter(RoomActivity.this,R.layout.restaurant_info
+			    , roomList);
+			  ListView listView = (ListView) findViewById(R.id.room_list);
+			  // Assign adapter to ListView
+			  listView.setAdapter(dataAdapter);
+	    }
+	};
+	public Handler refreshHandler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+        	dataAdapter.updateView();
+        	dataAdapter.notifyDataSetChanged();
+	    }
+	};
+	public void refresh(){
+		final String request = "getHosts|root|ttgwzmt5fz";
+		  //Send this request to server
+		  
+		  Thread contactserver = new Thread(){ 
+	        	@Override 
+	        	public void run(){
+	        		String resList = null;
+	        		//Add Operation here
+	        		//Send back the result String to server here.
+	        		try {
+						socket = new Socket("moore10.cs.purdue.edu", 4040);
+						if (socket.isConnected()) {
+							System.out.println("gethosts connected");
+						}
+						out = new PrintWriter(socket.getOutputStream(),true);
+						//debug
+						System.out.println(request);
+						out.println(request);
+						in = new Scanner(socket.getInputStream());
+						if (in.hasNextLine()) {
+							resList = (String) in.nextLine();
+						} else {
+							System.out.println("no rooms");
+						}
+						//debug
+						System.out.println("room activity" + resList);
+						formList(resList);						  
+						  
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		refreshHandler.sendEmptyMessage(0);
+	        	}
+	     };
+	     contactserver.start();
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,23 +104,73 @@ public class RoomActivity extends Activity {
 				overridePendingTransition(R.anim.right_left,R.anim.left_right);
             }
         });
+        findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	refresh();
+            }
+        });
 		TextView uname=new TextView(this); 
 	    uname=(TextView)findViewById(R.id.user_id); 
 	    username = getIntent().getStringExtra("username");
 	    uname.setText("Welcome, "+username+".");
 	}
+	private void formList(String in){
+		roomList.clear();
+		String[] input = in.split("\\|");
+		boolean status = false;
+		for(int i = 0;i < input.length-2;i+=3){
+		  if(input[i+2].equals("open")){
+			  status = true;
+		  }
+		  else{
+			  status = false;
+		  }
+		  roomList.add(new Room(input[i],input[i+1],status));
+		  }
+	}
 	private void displayListView() {
-		 
-		  //Array list of Room, change this part to get from server
-		  roomList = new ArrayList<Room>();
-		  roomList.add(new Room("What For Lunch?","monkey"));
+		  final String request = "getHosts|root|ttgwzmt5fz";
+		  //Send this request to server
 		  
-		  //create an ArrayAdaptar from the String Array
-		  dataAdapter = new MyCustomAdapter(this,R.layout.room_info
-		    , roomList);
-		  ListView listView = (ListView) findViewById(R.id.room_list);
-		  // Assign adapter to ListView
-		  listView.setAdapter(dataAdapter);
+		  Thread contactserver = new Thread(){ 
+	        	@Override 
+	        	public void run(){
+	        		String resList = null;
+	        		//Add Operation here
+	        		//Send back the result String to server here.
+	        		try {
+						socket = new Socket("moore10.cs.purdue.edu", 4040);
+						if (socket.isConnected()) {
+							System.out.println("gethosts connected");
+						}
+						out = new PrintWriter(socket.getOutputStream(),true);
+						//debug
+						System.out.println(request);
+						out.println(request);
+						in = new Scanner(socket.getInputStream());
+						if (in.hasNextLine()) {
+							resList = (String) in.nextLine();
+						} else {
+							System.out.println("no rooms");
+						}
+						//debug
+						System.out.println("room activity" + resList);
+						
+						roomList = new ArrayList<Room>();
+						
+						formList(resList);						  
+						  
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		initialHandler.sendEmptyMessage(0);
+	        	}
+	     };
+	     contactserver.start();
       }
 	private class MyCustomAdapter extends ArrayAdapter<Room> {
 		 
@@ -63,8 +187,9 @@ public class RoomActivity extends Activity {
 			   TextView name;
 			   TextView owner;
 			  }
-		  public void updateGlobal(){
-			  RoomActivity.this.roomList.addAll(this.roomList);
+		  public void updateView(){
+			  this.roomList.clear();
+			  this.roomList.addAll(RoomActivity.this.roomList);
 		  }
 		  @Override
 		  public View getView(int position, View convertView, ViewGroup parent) {
@@ -86,9 +211,52 @@ public class RoomActivity extends Activity {
 		     public void onClick(View v) {  
 		      ImageView egg = (ImageView) v ;  
 		      Room rom = (Room) egg.getTag();  
-		      Intent Vote = new Intent(RoomActivity.this, VoteActivity.class);
-		      startActivity(Vote);
-		      overridePendingTransition(R.anim.right_left,R.anim.left_right);
+		      if(rom.getStatus()){
+		      next = new Intent(RoomActivity.this, VoteActivity.class);
+		      next.putExtra("roomname", rom.getName());
+		      next.putExtra("owner", rom.getOwner());
+		      }
+		      else{
+		      next = new Intent(RoomActivity.this, ResultActivity.class);
+		      next.putExtra("roomname", rom.getName());
+		      next.putExtra("owner", rom.getOwner());
+		      }
+		      final String request = "GET-ALL-RES|root|ttgwzmt5fz|" +rom.getName()+"|" + username;
+		      //Send request to server and get the result from server, use finish handler when finish.
+		      Thread contactserver = new Thread(){ 
+		        	@Override 
+		        	public void run(){
+		        		//Add Operation here
+		        		//Send back the result String to server here.
+		        		
+		        		try {
+							socket = new Socket("moore10.cs.purdue.edu", 4040);
+							out = new PrintWriter(socket.getOutputStream(),true);
+							out.println(request);
+							in = new Scanner(socket.getInputStream());
+							//debug
+							System.out.println(request);
+							out.println(request);
+							
+							final String resList = (String) in.nextLine();
+							//debug
+							System.out.println("Room" + resList);
+							next.putExtra("resList", resList);
+						} catch (UnknownHostException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		  		        
+		        		finishedHandler.sendEmptyMessage(0);
+		        	}
+		     };
+		     contactserver.start();
+		      
+		      
+
 		     }  	
 		    });  
 		   } 
@@ -106,11 +274,5 @@ public class RoomActivity extends Activity {
 		  }
 		 }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.room, menu);
-		return true;
-	}
 
 }

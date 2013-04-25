@@ -248,6 +248,8 @@ public class LoginActivity extends Activity {
 			}*/
 			
 			// TODO: register the new account here.
+			//debug
+			System.out.println(logInRes);
 			return logInRes.equals("1");
 		}
 

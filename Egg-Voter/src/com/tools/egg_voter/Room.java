@@ -4,10 +4,10 @@ public class Room {
 	private String roomname;
 	private String owner;
 	private boolean status;
-	public Room(String roomname,String owner){
+	public Room(String roomname,String owner,boolean status){
 		this.roomname = roomname;
 		this.owner = owner;
-		this.status = true;
+		this.status = status;
 	}
 	public String getName(){
 		return roomname;

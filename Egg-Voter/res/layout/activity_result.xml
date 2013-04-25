@@ -11,17 +11,23 @@
          TextureView, etc.
     -->
 
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" />
+	<LinearLayout
+	    android:id="@+id/full_screen"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
 
+	<TextView
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:text="@string/result_content"
+	    android:textSize="30sp" />
+
+    <ListView
+        android:id="@+id/output_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+	</LinearLayout>
     <!--
          This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows.
@@ -31,7 +37,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true" >
-
         <LinearLayout
             android:id="@+id/fullscreen_content_controls"
             style="?buttonBarStyle"
@@ -48,7 +53,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:text="@string/return_text" />
         </LinearLayout>
     </FrameLayout>
 
